@@ -10,3 +10,17 @@ system = 'linux'
 cpu_family = 'x86_64'
 cpu = 'x86_64'
 endian = 'little'
+
+[properties]
+# Without this, Meson's pkg-config lookups for a cross build still see
+# the HOST's default pkg-config search paths, silently resolving
+# zlib/expat (etc.) against glibc-ABI host packages instead of failing
+# or finding the NeoOS-cross ones -- found the hard way during this
+# port's own bring-up (Meson reported "Run-time dependency zlib found:
+# YES 1.3.1" using the host's system zlib before this was added).
+# Setting pkg_config_libdir explicitly is Meson's documented fix: it
+# replaces the default search dirs entirely for this cross build, so
+# only packages actually built for x86_64-neoos-linux-musl are ever
+# found.
+sys_root = '/home/neo/opt/cross-x86_64-neoos/x86_64-neoos-linux-musl'
+pkg_config_libdir = ['/home/neo/projects/personal/neoos-zlib/build-output/lib/pkgconfig', '/home/neo/projects/personal/neoos-expat/build-output/lib/pkgconfig']
