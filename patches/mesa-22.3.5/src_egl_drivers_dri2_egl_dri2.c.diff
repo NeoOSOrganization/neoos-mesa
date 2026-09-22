@@ -1,0 +1,12 @@
+--- /tmp/tmp.zwqFyVyvf7/mesa-22.3.5/src/egl/drivers/dri2/egl_dri2.c	2026-09-22 15:33:11.070656505 +0330
++++ upstream/src/egl/drivers/dri2/egl_dri2.c	2026-09-22 15:31:52.034235013 +0330
+@@ -1194,6 +1194,9 @@
+    case _EGL_PLATFORM_DEVICE:
+       ret = dri2_initialize_device(disp);
+       break;
++   case _EGL_PLATFORM_NEOOS:
++      ret = dri2_initialize_neoos(disp);
++      break;
+    case _EGL_PLATFORM_X11:
+    case _EGL_PLATFORM_XCB:
+       ret = dri2_initialize_x11(disp);

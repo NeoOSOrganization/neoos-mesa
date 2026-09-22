@@ -1,0 +1,11 @@
+--- /tmp/tmp.zwqFyVyvf7/mesa-22.3.5/src/egl/meson.build	2026-09-22 15:33:11.074306216 +0330
++++ upstream/src/egl/meson.build	2026-09-22 15:31:15.440665023 +0330
+@@ -100,6 +100,8 @@
+   files_egl += files(
+     'drivers/dri2/platform_device.c',
+     'drivers/dri2/platform_surfaceless.c',
++    'drivers/dri2/platform_neoos.c',
++    'drivers/dri2/wmclient.c',
+   )
+   if with_platform_x11
+     files_egl += files('drivers/dri2/platform_x11.c')

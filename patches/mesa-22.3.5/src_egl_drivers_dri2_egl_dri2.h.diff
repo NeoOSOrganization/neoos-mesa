@@ -1,0 +1,22 @@
+--- /tmp/tmp.zwqFyVyvf7/mesa-22.3.5/src/egl/drivers/dri2/egl_dri2.h	2026-09-22 15:33:11.071218988 +0330
++++ upstream/src/egl/drivers/dri2/egl_dri2.h	2026-09-22 15:31:39.679380192 +0330
+@@ -319,6 +319,9 @@
+    __DRIbuffer buffers[5];
+    bool have_fake_front;
+ 
++   int32_t neoos_surface_id;   /* neoos-mesa sub-project 2 */
++   int neoos_bytes_per_pixel;
++
+ #ifdef HAVE_X11_PLATFORM
+    xcb_drawable_t drawable;
+    xcb_xfixes_region_t region;
+@@ -593,6 +596,9 @@
+ static inline void
+ dri2_teardown_device(struct dri2_egl_display *dri2_dpy) { /* noop */ }
+ 
++EGLBoolean
++dri2_initialize_neoos(_EGLDisplay *disp);
++
+ void
+ dri2_flush_drawable_for_swapbuffers(_EGLDisplay *disp, _EGLSurface *draw);
+ 

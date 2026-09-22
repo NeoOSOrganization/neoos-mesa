@@ -1,0 +1,20 @@
+--- /tmp/tmp.zwqFyVyvf7/mesa-22.3.5/src/egl/main/eglapi.c	2026-09-22 15:33:11.073380804 +0330
++++ upstream/src/egl/main/eglapi.c	2026-09-22 15:33:00.626428989 +0330
+@@ -113,6 +113,7 @@
+ #include "egllog.h"
+ 
+ #include "GL/mesa_glinterop.h"
++#include "drivers/dri2/platform_neoos.h"
+ 
+ /**
+  * Macros to help return an API entrypoint.
+@@ -467,6 +468,9 @@
+    case EGL_PLATFORM_SURFACELESS_MESA:
+       disp = _eglGetSurfacelessDisplay(native_display, attrib_list);
+       break;
++   case EGL_PLATFORM_NEOOS_MESA:
++      disp = _eglGetNeoosDisplay(native_display, attrib_list);
++      break;
+ #ifdef HAVE_ANDROID_PLATFORM
+    case EGL_PLATFORM_ANDROID_KHR:
+       disp = _eglGetAndroidDisplay(native_display, attrib_list);

@@ -1,0 +1,21 @@
+--- /tmp/tmp.zwqFyVyvf7/mesa-22.3.5/src/egl/main/egldisplay.h	2026-09-22 15:33:11.074306216 +0330
++++ upstream/src/egl/main/egldisplay.h	2026-09-22 15:32:13.285985286 +0330
+@@ -54,6 +54,7 @@
+    _EGL_PLATFORM_ANDROID,
+    _EGL_PLATFORM_HAIKU,
+    _EGL_PLATFORM_SURFACELESS,
++   _EGL_PLATFORM_NEOOS,
+    _EGL_PLATFORM_DEVICE,
+    _EGL_PLATFORM_WINDOWS,
+ 
+@@ -345,6 +346,10 @@
+ _eglGetSurfacelessDisplay(void *native_display,
+                           const EGLAttrib *attrib_list);
+ 
++_EGLDisplay*
++_eglGetNeoosDisplay(void *native_display,
++                    const EGLAttrib *attrib_list);
++
+ #ifdef HAVE_ANDROID_PLATFORM
+ _EGLDisplay*
+ _eglGetAndroidDisplay(void *native_display,
