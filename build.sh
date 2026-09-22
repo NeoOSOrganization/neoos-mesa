@@ -9,6 +9,25 @@ if [ ! -f upstream/meson.build ]; then
     exit 1
 fi
 
+echo "Resetting upstream/ to pristine mesa-22.3.5 before patching..."
+git -C upstream checkout -- . 2>/dev/null || true
+git -C upstream clean -fd src/egl/drivers/dri2/platform_neoos.c \
+    src/egl/drivers/dri2/platform_neoos.h \
+    src/egl/drivers/dri2/wmclient.c \
+    src/egl/drivers/dri2/wmclient.h 2>/dev/null || true
+
+for diff in patches/mesa-22.3.5/*.diff; do
+    [ -s "$diff" ] || continue
+    echo "Applying $diff"
+    patch -p1 -d upstream < "$diff"
+done
+
+echo "Copying new files (platform_neoos, wmclient) into upstream/..."
+cp src-new/platform_neoos.c src-new/platform_neoos.h \
+   upstream/src/egl/drivers/dri2/
+cp ../neoos-wm/wmclient.c ../neoos-wm/wmclient.h \
+   upstream/src/egl/drivers/dri2/
+
 mkdir -p "$PREFIX"
 rm -rf "$BUILD_TMP"
 
