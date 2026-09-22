@@ -6,6 +6,7 @@
 #include <EGL/egl.h>
 #include <GL/gl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include "wmclient.h"
@@ -15,6 +16,13 @@
 #define H 200
 
 int main(void) {
+    /* Mesa's meson build bakes the swrast_dri.so search path in as
+     * $prefix/$libdir/dri -- an absolute build-host path, meaningless
+     * on NeoOS. dri2_open_driver() checks LIBGL_DRIVERS_PATH first
+     * (egl_dri2.c), so point it at where the disk image actually
+     * stages the driver instead. */
+    setenv("LIBGL_DRIVERS_PATH", "/lib/dri", 1);
+
     struct wm_conn *wm = wm_connect();
     if (!wm) {
         printf("FAILED: wm_connect returned NULL\n");
