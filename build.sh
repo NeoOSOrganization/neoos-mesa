@@ -17,7 +17,7 @@ meson setup "$BUILD_TMP" upstream \
     --prefix="$PREFIX" \
     --default-library=static \
     -Dosmesa=true \
-    -Dgallium-drivers=softpipe \
+    -Dgallium-drivers=swrast \
     -Dplatforms= \
     -Dglx=disabled \
     -Degl=disabled \
@@ -27,3 +27,13 @@ meson setup "$BUILD_TMP" upstream \
     -Dshader-cache=disabled
 
 echo "OK: Meson configure succeeded -- see build-tmp/meson-logs/meson-log.txt"
+
+ninja -C "$BUILD_TMP"
+ninja -C "$BUILD_TMP" install
+
+if [ -f "$PREFIX/lib/libOSMesa.a" ]; then
+    echo "OK: libOSMesa.a built at $PREFIX/lib/libOSMesa.a"
+else
+    echo "ERROR: build finished but libOSMesa.a not found" >&2
+    exit 1
+fi
