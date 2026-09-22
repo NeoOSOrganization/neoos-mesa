@@ -21,6 +21,12 @@ endian = 'little'
 # Setting pkg_config_libdir explicitly is Meson's documented fix: it
 # replaces the default search dirs entirely for this cross build, so
 # only packages actually built for x86_64-neoos-linux-musl are ever
-# found.
-sys_root = '/home/neo/opt/cross-x86_64-neoos/x86_64-neoos-linux-musl'
+# found. Deliberately NOT setting sys_root: that property makes Meson
+# prepend it to every path pkg-config reports (via
+# PKG_CONFIG_SYSROOT_DIR), which is only correct for .pc files staged
+# under a real sysroot tree -- ours report their own absolute
+# build-output paths directly, and sys_root corrupted them into
+# nonexistent concatenated paths (found the hard way: "zlib.h: No such
+# file or directory" with an include path of
+# ".../x86_64-neoos-linux-musl/home/neo/projects/personal/neoos-zlib/...").
 pkg_config_libdir = ['/home/neo/projects/personal/neoos-zlib/build-output/lib/pkgconfig', '/home/neo/projects/personal/neoos-expat/build-output/lib/pkgconfig']
