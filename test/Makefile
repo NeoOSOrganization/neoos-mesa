@@ -17,3 +17,13 @@ build/triangle_test.nex: triangle_test.c
 
 clean:
 	rm -rf build
+
+WM_DIR := ../../neoos-wm
+EGL_CFLAGS := -O2 -Wall -I$(OSMESA_DIR)/include -I../src-new -I$(WM_DIR)
+EGL_LDFLAGS := -L$(OSMESA_DIR)/lib -Wl,-rpath-link,$(OSMESA_DIR)/lib -lEGL -lGL -lm -lpthread
+
+build/egl_triangle_client.nex: egl_triangle_client.c $(WM_DIR)/wmclient.c
+	mkdir -p build
+	$(CC) $(EGL_CFLAGS) egl_triangle_client.c $(WM_DIR)/wmclient.c -o $@ $(EGL_LDFLAGS)
+
+all: build/egl_triangle_client.nex

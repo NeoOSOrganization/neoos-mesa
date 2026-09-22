@@ -23,7 +23,9 @@ struct NeoosEGLWindow {
    uint32_t height;
 };
 
-EGLBoolean
-dri2_initialize_neoos(_EGLDisplay *disp);
+/* dri2_initialize_neoos() is declared in egl_dri2.h (Task 3's patch),
+ * not here: it takes Mesa's internal _EGLDisplay*, a type external
+ * consumers of this public header (eglapi.c's dispatch case, and any
+ * application like egl_triangle_client.c) have no business seeing. */
 
 #endif
