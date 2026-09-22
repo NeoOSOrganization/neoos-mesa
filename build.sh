@@ -14,7 +14,8 @@ git -C upstream checkout -- . 2>/dev/null || true
 git -C upstream clean -fd src/egl/drivers/dri2/platform_neoos.c \
     src/egl/drivers/dri2/platform_neoos.h \
     src/egl/drivers/dri2/wmclient.c \
-    src/egl/drivers/dri2/wmclient.h 2>/dev/null || true
+    src/egl/drivers/dri2/wmclient.h \
+    src/egl/drivers/dri2/wmproto.h 2>/dev/null || true
 
 for diff in patches/mesa-22.3.5/*.diff; do
     [ -s "$diff" ] || continue
@@ -25,7 +26,9 @@ done
 echo "Copying new files (platform_neoos, wmclient) into upstream/..."
 cp src-new/platform_neoos.c src-new/platform_neoos.h \
    upstream/src/egl/drivers/dri2/
-cp ../neoos-wm/wmclient.c ../neoos-wm/wmclient.h \
+# wmclient.c's own #include "wmproto.h" needs this alongside it -- the
+# egl target's include dirs don't reach ../neoos-wm on their own.
+cp ../neoos-wm/wmclient.c ../neoos-wm/wmclient.h ../neoos-wm/wmproto.h \
    upstream/src/egl/drivers/dri2/
 
 mkdir -p "$PREFIX"

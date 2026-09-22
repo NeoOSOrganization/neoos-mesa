@@ -51,9 +51,8 @@ neoosPutImage(__DRIdrawable *draw, int op,
              char *data, void *loaderPrivate)
 {
    struct dri2_egl_surface *dri2_surf = loaderPrivate;
-   struct dri2_egl_display *dri2_dpy =
-      dri2_egl_display(dri2_surf->base.Resource.Display);
-   struct wm_conn *wm = (struct wm_conn *) dri2_dpy->base.PlatformDisplay;
+   struct wm_conn *wm =
+      (struct wm_conn *) dri2_surf->base.Resource.Display->PlatformDisplay;
    uint32_t *dst = wm_pixels(wm);
    uint32_t stride = wm_stride_px(wm);
    int bpp = dri2_surf->neoos_bytes_per_pixel;
@@ -78,9 +77,8 @@ neoosGetImage(__DRIdrawable *read,
              char *data, void *loaderPrivate)
 {
    struct dri2_egl_surface *dri2_surf = loaderPrivate;
-   struct dri2_egl_display *dri2_dpy =
-      dri2_egl_display(dri2_surf->base.Resource.Display);
-   struct wm_conn *wm = (struct wm_conn *) dri2_dpy->base.PlatformDisplay;
+   struct wm_conn *wm =
+      (struct wm_conn *) dri2_surf->base.Resource.Display->PlatformDisplay;
    uint32_t *src = wm_pixels(wm);
    uint32_t stride = wm_stride_px(wm);
    int bpp = dri2_surf->neoos_bytes_per_pixel;
