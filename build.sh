@@ -3,6 +3,20 @@ set -e
 
 PREFIX="${PREFIX:-$(pwd)/build-output}"
 BUILD_TMP="${BUILD_TMP:-$(pwd)/build-tmp}"
+RUNTIME="${RUNTIME:-$(pwd)/build-output-runtime-libs}"
+
+# Where everything this build consumes lives. The defaults are the
+# sibling checkouts of a normal development tree; neoos-os-builder
+# passes its own scratch-directory paths.
+NEOOS_TOOLCHAIN="${NEOOS_TOOLCHAIN:-$HOME/opt/cross-x86_64-neoos}"
+ZLIB_DIR="${ZLIB_DIR:-$(pwd)/../neoos-zlib/build-output}"
+EXPAT_DIR="${EXPAT_DIR:-$(pwd)/../neoos-expat/build-output}"
+LIBDRM_DIR="${LIBDRM_DIR:-$(pwd)/../neoos-libdrm/build-output}"
+WM_DIR="${WM_DIR:-$(pwd)/../neoos-wm}"
+export PATH="$NEOOS_TOOLCHAIN/bin:$PATH"
+for d in "$ZLIB_DIR" "$EXPAT_DIR" "$LIBDRM_DIR"; do
+    [ -d "$d/lib/pkgconfig" ] || { echo "Error: $d/lib/pkgconfig missing -- build that dependency first" >&2; exit 1; }
+done
 
 if [ ! -f upstream/meson.build ]; then
     echo "Error: upstream Mesa checkout not found (git submodule update --init)" >&2
@@ -28,13 +42,18 @@ cp src-new/platform_neoos.c src-new/platform_neoos.h \
    upstream/src/egl/drivers/dri2/
 # wmclient.c's own #include "wmproto.h" needs this alongside it -- the
 # egl target's include dirs don't reach ../neoos-wm on their own.
-cp ../neoos-wm/wmclient.c ../neoos-wm/wmclient.h ../neoos-wm/wmproto.h \
+cp "$WM_DIR/wmclient.c" "$WM_DIR/wmclient.h" "$WM_DIR/wmproto.h" \
    upstream/src/egl/drivers/dri2/
 
 mkdir -p "$PREFIX"
 rm -rf "$BUILD_TMP"
 
+CONSTANTS="$(pwd)/cross-constants.txt"
+printf "[constants]\ntoolchain = '%s'\nzlib = '%s'\nexpat = '%s'\nlibdrm = '%s'\n" \
+    "$NEOOS_TOOLCHAIN" "$ZLIB_DIR" "$EXPAT_DIR" "$LIBDRM_DIR" > "$CONSTANTS"
+
 meson setup "$BUILD_TMP" upstream \
+    --cross-file="$CONSTANTS" \
     --cross-file="$(pwd)/cross-file.txt" \
     --prefix="$PREFIX" \
     --default-library=static \
@@ -94,3 +113,23 @@ else
     echo "ERROR: build finished but libEGL.so/libGL.so not found" >&2
     exit 1
 fi
+
+# The runtime set a NeoOS disk image stages at /lib (NeoOS's
+# disk-image rule copies from here): every .so a Mesa-linked program
+# loads, stripped. The C/C++ runtime comes from the toolchain's own
+# sysroot -- the libc.so the programs were linked against -- and musl's
+# libc.so IS its dynamic linker, so ld-musl-x86_64.so.1 is a copy.
+SYSROOT_LIB="$NEOOS_TOOLCHAIN/x86_64-neoos-linux-musl/lib"
+STRIP=x86_64-neoos-linux-musl-strip
+rm -rf "$RUNTIME"
+mkdir -p "$RUNTIME/dri"
+$STRIP -o "$RUNTIME/libOSMesa.so.8"     "$(readlink -f "$PREFIX/lib/libOSMesa.so.8")"
+$STRIP -o "$RUNTIME/libglapi.so.0"      "$(readlink -f "$PREFIX/lib/libglapi.so.0")"
+$STRIP -o "$RUNTIME/libEGL.so.1"        "$(readlink -f "$PREFIX/lib/libEGL.so.1")"
+$STRIP -o "$RUNTIME/libGL.so.1"         "$(readlink -f "$PREFIX/lib/libGL.so.1")"
+$STRIP -o "$RUNTIME/dri/swrast_dri.so"  "$PREFIX/lib/dri/swrast_dri.so"
+$STRIP -o "$RUNTIME/libstdc++.so.6"     "$(readlink -f "$SYSROOT_LIB/libstdc++.so.6")"
+$STRIP -o "$RUNTIME/libgcc_s.so.1"      "$SYSROOT_LIB/libgcc_s.so.1"
+$STRIP -o "$RUNTIME/libc.so"            "$SYSROOT_LIB/libc.so"
+cp "$RUNTIME/libc.so" "$RUNTIME/ld-musl-x86_64.so.1"
+echo "OK: runtime libraries staged at $RUNTIME"

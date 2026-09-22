@@ -1,8 +1,11 @@
+# `toolchain`, `zlib`, `expat` and `libdrm` come from the constants file
+# build.sh generates and passes as the FIRST --cross-file: machine-
+# specific paths ($NEOOS_TOOLCHAIN, $ZLIB_DIR, ...) never live here.
 [binaries]
-c = '/home/neo/opt/cross-x86_64-neoos/bin/x86_64-neoos-linux-musl-gcc'
-cpp = '/home/neo/opt/cross-x86_64-neoos/bin/x86_64-neoos-linux-musl-g++'
-ar = '/home/neo/opt/cross-x86_64-neoos/bin/x86_64-neoos-linux-musl-gcc-ar'
-strip = '/home/neo/opt/cross-x86_64-neoos/bin/x86_64-neoos-linux-musl-strip'
+c = toolchain / 'bin/x86_64-neoos-linux-musl-gcc'
+cpp = toolchain / 'bin/x86_64-neoos-linux-musl-g++'
+ar = toolchain / 'bin/x86_64-neoos-linux-musl-gcc-ar'
+strip = toolchain / 'bin/x86_64-neoos-linux-musl-strip'
 pkg-config = '/usr/bin/pkg-config'
 
 [host_machine]
@@ -29,4 +32,4 @@ endian = 'little'
 # nonexistent concatenated paths (found the hard way: "zlib.h: No such
 # file or directory" with an include path of
 # ".../x86_64-neoos-linux-musl/home/neo/projects/personal/neoos-zlib/...").
-pkg_config_libdir = ['/home/neo/projects/personal/neoos-zlib/build-output/lib/pkgconfig', '/home/neo/projects/personal/neoos-expat/build-output/lib/pkgconfig', '/home/neo/projects/personal/neoos-libdrm/build-output/lib/pkgconfig']
+pkg_config_libdir = [zlib / 'lib/pkgconfig', expat / 'lib/pkgconfig', libdrm / 'lib/pkgconfig']
