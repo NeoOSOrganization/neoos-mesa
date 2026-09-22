@@ -1,0 +1,12 @@
+[binaries]
+c = '/home/neo/opt/cross-x86_64-neoos/bin/x86_64-neoos-linux-musl-gcc'
+cpp = '/home/neo/opt/cross-x86_64-neoos/bin/x86_64-neoos-linux-musl-g++'
+ar = '/home/neo/opt/cross-x86_64-neoos/bin/x86_64-neoos-linux-musl-gcc-ar'
+strip = '/home/neo/opt/cross-x86_64-neoos/bin/x86_64-neoos-linux-musl-strip'
+pkg-config = '/usr/bin/pkg-config'
+
+[host_machine]
+system = 'linux'
+cpu_family = 'x86_64'
+cpu = 'x86_64'
+endian = 'little'
